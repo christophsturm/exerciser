@@ -19,10 +19,9 @@ module.exports = nodeUnit.testCase({
   },
   "can run http requests": function(assert) {
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-      e.paths = ['/blah'];
-      e.requests = 1;
+      e.paths = ['/blah','/blah'];
       e.run(function() {
-            assert.equal(requests, 1, "should run 1 http request before calling callback");
+            assert.equal(requests, 2, "should run 2 http request before calling callback");
             assert.done();
           }
       )
