@@ -9,7 +9,7 @@
             " web": "http://www.bblogmedia.com"
         }
     ],
-    "dependencies": {
+    "devDependencies": {
         "nodeunit":"*"
     }
 }
