@@ -12,9 +12,12 @@ module.exports = nodeUnit.testCase({
   setUp: function (callback) {
       requests=0;
       svr = http.createServer(function (req, res) {
-          res.writeHead(statusCodes[requests%statusCodes.length], {'Content-Type': 'text/plain'});
+          var statusCode = statusCodes[requests%statusCodes.length];
+          if (statusCode) { // for status code 0 we'll just let the request timeout
+              res.writeHead(statusCode, {'Content-Type': 'text/plain'});
+              res.end();
+          }
           requests++;
-          res.end(req.url);
       });
       svr.listen(9999);
       timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },1000);
@@ -24,10 +27,7 @@ module.exports = nodeUnit.testCase({
       statusCodes=[200];
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
       e.run('/blah',100,2, function(stats) {
-
-            // right now we possibly make more requests than specified, who cares :)
-            assert.ok(requests>=100,  "should run at least 100 http request before calling callback");
-
+            assert.equals(requests,100,  "should run the correct number of requests");
             assert.equal(stats.successful, 100, "should report how many requests were succesful");
             assert.equal(stats.times.length, 100, "should report access times for all requests");
             assert.done();
@@ -46,6 +46,20 @@ module.exports = nodeUnit.testCase({
               assert.equals(stats.statusCodes[404], 33);
               assert.equals(stats.statusCodes[500], 33);
               assert.equal(stats.times.length, 99, "should report access times for all requests");
+              assert.done();
+            }
+        )
+    },
+    "can handle timeouts": function(assert) {
+        statusCodes=[200,0];
+        e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
+        e.run('/blah',10,1, function(stats) {
+
+              // right now we possibly make more requests than specified, who cares :)
+
+              assert.equal(stats.successful, 5, "should report how many requests were succesful");
+              assert.equal(stats.timeouts, 5, "should report how many requests were timeouts");
+              assert.equal(stats.times.length, 10, "should report access times for all requests");
               assert.done();
             }
         )
