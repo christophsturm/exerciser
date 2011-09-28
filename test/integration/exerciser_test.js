@@ -17,16 +17,18 @@ module.exports = nodeUnit.testCase({
           res.end(req.url);
       });
       svr.listen(9999);
-      timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },10000);
+      timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },1000);
     callback();
   },
-  "can run http requests and collect stats": function(assert) {
+  "can run parallel http requests and collect stats": function(assert) {
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-      e.run('/blah',10,function(stats) {
-            assert.equal(requests, 10, "should run 10 http request before calling callback");
-            assert.equal(stats.successful, 10, "should report that it ran 10 succesful requests");
-            assert.equal(stats.times.length, 10, "should report access times for all requests");
-            sys.debug(stats.times);
+      e.run('/blah',100,2, function(stats) {
+
+            // right now we possibly make more requests than specified, who cares :)
+            assert.ok(requests>=100,  "should run at least 100 http request before calling callback");
+
+            assert.equal(stats.successful, 100, "should report that it ran 100 succesful requests");
+            assert.equal(stats.times.length, 100, "should report access times for all requests");
             assert.done();
           }
       )
