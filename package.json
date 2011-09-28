@@ -5,7 +5,7 @@
     "maintainers":[
         {
             "name": "Christoph Sturm",
-            "email": "me@christophsturm.com",
+            "email": "me@christophsturm.com"
         }
     ],
     "devDependencies": {
