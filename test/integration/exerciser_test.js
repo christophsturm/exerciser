@@ -19,10 +19,11 @@ module.exports = nodeUnit.testCase({
       timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },10000);
     callback();
   },
-  "can run http requests": function(assert) {
+  "can run http requests and collect stats": function(assert) {
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-      e.run('/blah',10,function() {
+      e.run('/blah',10,function(stats) {
             assert.equal(requests, 10, "should run 10 http request before calling callback");
+            assert.equal(stats.successful, 10, "should report that it ran 10 succesful requests");
             assert.done();
           }
       )
