@@ -26,7 +26,7 @@ module.exports = nodeUnit.testCase({
   "can run parallel http requests and collect stats": function(assert) {
       statusCodes=[200];
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-      e.run('/blah',100,2, function(stats) {
+      e.run({path:'/blah',requests:100,concurrent:2}, function(stats) {
             assert.equals(requests,100,  "should run the correct number of requests");
             assert.equal(stats.successful, 100, "should report how many requests were succesful");
             assert.equal(stats.times.length, 100, "should report access times for all requests");
@@ -37,7 +37,7 @@ module.exports = nodeUnit.testCase({
     "can report different status codes": function(assert) {
         statusCodes=[200,404,500];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-        e.run('/blah',99,1, function(stats) {
+        e.run({path:'/blah',requests:99,concurrent:1}, function(stats) {
 
               // right now we possibly make more requests than specified, who cares :)
 
@@ -53,7 +53,7 @@ module.exports = nodeUnit.testCase({
     "can handle timeouts": function(assert) {
         statusCodes=[200,0];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-        e.run('/blah',10,1, function(stats) {
+        e.run({path:'/blah',requests:10,timeout:10}, function(stats) {
 
               // right now we possibly make more requests than specified, who cares :)
 
