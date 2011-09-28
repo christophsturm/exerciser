@@ -1,9 +1,15 @@
 {
     "name": "exerciser",
-    "description": "a small benchmarking lib",
+    "description": "a small benchmarking lib written in node.js",
     "version": "0.1.0",
+    "maintainers":[
+        {
+            "name": "Christoph Sturm",
+            "email": "me@christophsturm.com",
+            " web": "http://www.bblogmedia.com"
+        }
+    ],
     "dependencies": {
-        "nodeunit":"*",
-        "sugar":"*"
+        "nodeunit":"*"
     }
 }
