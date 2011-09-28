@@ -12,8 +12,8 @@ module.exports = nodeUnit.testCase({
   setUp: function (callback) {
       requests=0;
       svr = http.createServer(function (req, res) {
+          res.writeHead(statusCodes[requests%statusCodes.length], {'Content-Type': 'text/plain'});
           requests++;
-          res.writeHead(200, {'Content-Type': 'text/plain'});
           res.end(req.url);
       });
       svr.listen(9999);
@@ -21,18 +21,36 @@ module.exports = nodeUnit.testCase({
     callback();
   },
   "can run parallel http requests and collect stats": function(assert) {
+      statusCodes=[200];
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
       e.run('/blah',100,2, function(stats) {
 
             // right now we possibly make more requests than specified, who cares :)
             assert.ok(requests>=100,  "should run at least 100 http request before calling callback");
 
-            assert.equal(stats.successful, 100, "should report that it ran 100 succesful requests");
+            assert.equal(stats.successful, 100, "should report how many requests were succesful");
             assert.equal(stats.times.length, 100, "should report access times for all requests");
             assert.done();
           }
       )
   },
+    "can report different status codes": function(assert) {
+        statusCodes=[200,404,500];
+        e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
+        e.run('/blah',99,1, function(stats) {
+
+              // right now we possibly make more requests than specified, who cares :)
+
+              assert.equal(stats.successful, 33, "should report how many requests were succesful");
+              assert.equals(stats.statusCodes[200], 33);
+              assert.equals(stats.statusCodes[404], 33);
+              assert.equals(stats.statusCodes[500], 33);
+              assert.equal(stats.times.length, 99, "should report access times for all requests");
+              assert.done();
+            }
+        )
+    },
+
   tearDown: function(callback) {
       clearTimeout(timeout);
       svr.close();
