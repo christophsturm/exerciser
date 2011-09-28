@@ -3,6 +3,7 @@ require.paths.push(__dirname + '/../../lib');
 var nodeUnit = require("nodeunit"),
     exerciser = require("exerciser"),
     http = require("http"),
+    sys = require("sys"),
     assert = require("assert");
 
 
@@ -24,6 +25,8 @@ module.exports = nodeUnit.testCase({
       e.run('/blah',10,function(stats) {
             assert.equal(requests, 10, "should run 10 http request before calling callback");
             assert.equal(stats.successful, 10, "should report that it ran 10 succesful requests");
+            assert.equal(stats.times.length, 10, "should report access times for all requests");
+            sys.debug(stats.times);
             assert.done();
           }
       )
