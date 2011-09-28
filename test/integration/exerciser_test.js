@@ -30,6 +30,7 @@ module.exports = nodeUnit.testCase({
             assert.equals(requests,100,  "should run the correct number of requests");
             assert.equal(stats.successful, 100, "should report how many requests were succesful");
             assert.equal(stats.times.length, 100, "should report access times for all requests");
+            assert.ok(stats.totalTime < 1000, "should report the total time for all requests");
             assert.done();
           }
       )
