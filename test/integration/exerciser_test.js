@@ -39,9 +39,6 @@ module.exports = nodeUnit.testCase({
         statusCodes=[200,404,500];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
         e.run({path:'/blah',requests:99,concurrent:1}, function(stats) {
-
-              // right now we possibly make more requests than specified, who cares :)
-
               assert.equal(stats.successful, 33, "should report how many requests were succesful");
               assert.equals(stats.statusCodes[200], 33);
               assert.equals(stats.statusCodes[404], 33);
