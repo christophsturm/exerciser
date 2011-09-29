@@ -12,6 +12,7 @@ module.exports = nodeUnit.testCase({
   setUp: function (callback) {
       requests=0;
       svr = http.createServer(function (req, res) {
+          headers=req.headers;
           var statusCode = statusCodes[requests%statusCodes.length];
           if (statusCode) { // for status code 0 we'll just let the request timeout
               res.writeHead(statusCode, {'Content-Type': 'text/plain'});
@@ -63,6 +64,15 @@ module.exports = nodeUnit.testCase({
         )
     },
 
+    "can set headers": function(assert) {
+        statusCodes=[200];
+        e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
+        e.run({path:'/blah',requests:1,headers:{"Cookie":"cookie1=v1, cookie2=v2"}}, function(stats) {
+              assert.deepEqual(headers["cookie"],"cookie1=v1, cookie2=v2");
+              assert.done();
+            }
+        )
+    },
   tearDown: function(callback) {
       clearTimeout(timeout);
       svr.close();
