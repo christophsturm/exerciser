@@ -21,17 +21,17 @@ module.exports = nodeUnit.testCase({
           requests++;
       });
       svr.listen(9999);
-      timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },1000);
+      timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },5000);
     callback();
   },
   "can run parallel http requests and collect stats": function(assert) {
       statusCodes=[200];
       e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-      e.run({path:'/blah',requests:100,concurrent:2}, function(stats) {
-            assert.equals(requests,100,  "should run the correct number of requests");
-            assert.equal(stats.successful, 100, "should report how many requests were succesful");
-            assert.equal(stats.times.length, 100, "should report access times for all requests");
-            assert.ok(stats.totalTime < 1000, "should report the total time for all requests");
+      e.run({path:'/blah',requests:1000,concurrent:2}, function(stats) {
+            assert.equals(requests,1000,  "should run the correct number of requests");
+            assert.equal(stats.successful, 1000, "should report how many requests were succesful");
+            assert.equal(stats.times.length, 1000, "should report access times for all requests");
+            assert.ok(stats.totalTime > 0, "should report the total time for all requests");
             assert.done();
           }
       )
