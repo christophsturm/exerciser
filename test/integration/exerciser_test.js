@@ -58,7 +58,8 @@ module.exports = nodeUnit.testCase({
               // right now we possibly make more requests than specified, who cares :)
 
               assert.equal(stats.successful, 5, "should report how many requests were succesful");
-              assert.equal(stats.timeouts, 5, "should report how many requests were timeouts");
+              assert.equal(stats.statusCodes['timeout'], 5, "should report how many requests were timeouts");
+              assert.equal(stats.totalErrors, 5, "should report how many requests were timeouts");
               assert.equal(stats.times.length, 10, "should report access times for all requests");
               assert.done();
             }
