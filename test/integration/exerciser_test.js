@@ -44,6 +44,7 @@ module.exports = nodeUnit.testCase({
               assert.equals(stats.statusCodes[200], 33);
               assert.equals(stats.statusCodes[404], 33);
               assert.equals(stats.statusCodes[500], 33);
+              assert.ok(stats.statusCodes[501] === undefined, "status codes that did not occur should not be set at all");
               assert.equal(stats.times.length, 99, "should report access times for all requests");
               assert.done();
             }
