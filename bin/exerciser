@@ -8,6 +8,8 @@ var a=process.argv;
 
 if (a.length < 5 || a.length >6) {
     console.log("usage: "+a[1]+" filename host:port total-requests [concurrency]");
+    console.log("file format: <url> <headers as json>");
+
     process.exit();
 }
 
@@ -22,7 +24,7 @@ var currentLine=0,totalLines=lines.length;
 var handleLine=function() {
     line=lines[currentLine];
     var headers;
-    pathAndHeaders=line.split("\t");
+    pathAndHeaders=line.split(/\s/);
     if (pathAndHeaders[1])
         headers=JSON.parse(pathAndHeaders[1]);
     console.log("path\t\ttotal time\tr/s\t");
