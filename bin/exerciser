@@ -2,13 +2,12 @@
 
 require.paths.push(__dirname + '/../lib');
 
-var sys = require('sys'),
-    fs = require('fs'),
+var fs = require('fs'),
     exerciser = require('exerciser');
 var a=process.argv;
 
 if (a.length < 5 || a.length >6) {
-    sys.log("usage: "+a[1]+" filename host:port total-requests [concurrency]");
+    console.log("usage: "+a[1]+" filename host:port total-requests [concurrency]");
     process.exit();
 }
 
@@ -26,8 +25,9 @@ var handleLine=function() {
     pathAndHeaders=line.split("\t");
     if (pathAndHeaders[1])
         headers=JSON.parse(pathAndHeaders[1]);
+    console.log("path\t\ttotal time\tr/s\t");
     e.run({path:pathAndHeaders[0],requests:requests,concurrent:concurrent,headers:headers}, function(stats) {
-        sys.log(pathAndHeaders[0]+ " "+stats.totalTime/requests+" "+stats.timeouts);
+        console.log(pathAndHeaders[0]+ "\t"+stats.totalTime+"\t\t"+Math.round(requests/stats.totalTime*1000));
         if (requests != stats.successful)
             console.log("status codes: %j",stats.statusCodes);
         if (++currentLine<totalLines)
