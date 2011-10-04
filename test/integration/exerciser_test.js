@@ -1,9 +1,9 @@
-require.paths.push(__dirname + '/../../lib');
-
 var nodeUnit = require("nodeunit"),
-    exerciser = require("exerciser"),
+    exerciser = require("../../lib/exerciser"),
     http = require("http"),
     sys = require("sys"),
+    childProcess = require("child_process"),
+    fs = require("fs"),
     assert = require("assert");
 
 
@@ -74,6 +74,13 @@ module.exports = nodeUnit.testCase({
               assert.done();
             }
         )
+    },
+    "has a command line interface": function(assert) {
+        statusCodes=[200];
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 10 10 results.json", function(error,stdout,stderr) {
+            JSON.parse(fs.readFileSync("results.json"));
+            assert.done();
+        });
     },
   tearDown: function(callback) {
       clearTimeout(timeout);

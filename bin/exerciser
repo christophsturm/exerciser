@@ -1,24 +1,22 @@
 #!/usr/bin/env node
 
-require.paths.push(__dirname + '/../lib');
-
 var fs = require('fs'),
-    exerciser = require('exerciser');
+    exerciser = require('../lib/exerciser');
 var a=process.argv;
 
-if (a.length < 5 || a.length >6) {
-    console.log("usage: "+a[1]+" filename host:port total-requests [concurrency]");
+if (a.length < 5 || a.length >7) {
+    console.log("usage: "+a[1]+" filename host:port total-requests [concurrency] [JSON file]");
     console.log("file format: <url> <headers as json>");
 
     process.exit();
 }
 
-var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5];
-
+var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6];
+var pathStats={};
 
 if (!hostandport[1]) hostandport[1]=80;
 
-e = new exerciser.Exerciser({host:hostandport[0],port:hostandport[1]});
+var e = new exerciser.Exerciser({host:hostandport[0],port:hostandport[1]});
 lines=fs.readFileSync(a[2]).toString().split("\n");
 var currentLine=0,totalLines=lines.length;
 var handleLine=function() {
@@ -27,13 +25,20 @@ var handleLine=function() {
     pathAndHeaders=line.split(/\s/);
     if (pathAndHeaders[1])
         headers=JSON.parse(pathAndHeaders[1]);
-    console.log("path\t\ttotal time\tr/s\t");
-    e.run({path:pathAndHeaders[0],requests:requests,concurrent:concurrent,headers:headers}, function(stats) {
-        console.log(pathAndHeaders[0]+ "\t"+stats.totalTime+"\t\t"+Math.round(requests/stats.totalTime*1000));
+    var path = pathAndHeaders[0];
+    e.run({path:path,requests:requests,concurrent:concurrent,headers:headers}, function(stats) {
+        stats.rps=requests/stats.totalTime*1000;
+        stats.times=undefined;
+        pathStats[path]=stats;
+        console.log(path+ "\t"+stats.totalTime+"\t\t"+Math.round(stats.rps));
         if (requests != stats.successful)
             console.log("status codes: %j",stats.statusCodes);
         if (++currentLine<totalLines)
             handleLine();
+        else {
+            fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
+        }
         });
 };
+console.log("path\t\ttotal time\tr/s\t");
 handleLine();
