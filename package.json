@@ -8,6 +8,13 @@
             "email": "me@christophsturm.com"
         }
     ],
+    "bin": {
+        "exerciser" : "./bin/exerciser"
+    },
+    "directories" : {
+        "lib" : "./lib",
+        "bin" : "./bin"
+    },
     "devDependencies": {
         "nodeunit":"*"
     }
