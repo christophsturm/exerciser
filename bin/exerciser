@@ -36,7 +36,8 @@ var handleLine=function() {
         if (++currentLine<totalLines)
             handleLine();
         else {
-            fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
+            if (jsonFile)
+                fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
         }
         });
 };
