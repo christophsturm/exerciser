@@ -54,9 +54,6 @@ module.exports = nodeUnit.testCase({
         statusCodes=[200,0];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
         e.run({path:'/blah',requests:10,timeout:10}, function(stats) {
-
-              // right now we possibly make more requests than specified, who cares :)
-
               assert.equal(stats.successful, 5, "should report how many requests were succesful");
               assert.equal(stats.statusCodes['timeout'], 5, "should report how many requests were timeouts");
               assert.equal(stats.totalErrors, 5, "should report how many requests were timeouts");
