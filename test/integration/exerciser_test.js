@@ -50,6 +50,16 @@ module.exports = nodeUnit.testCase({
             }
         )
     },
+    "counts redirects as success": function(assert) {
+        statusCodes=[307,302];
+        e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
+        e.run({path:'/blah',requests:2,concurrent:1}, function(stats) {
+              assert.equal(stats.successful, 2, "should report how many requests were succesful");
+              assert.equal(stats.totalErrors, 0, "should report how many requests were succesful");
+              assert.done();
+            }
+        )
+    },
     "can handle timeouts": function(assert) {
         statusCodes=[200,0];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
@@ -72,7 +82,8 @@ module.exports = nodeUnit.testCase({
         )
     },
     "has a command line interface": function(assert) {
-        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1", function(error,stdout,stderr) {
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 3 1", function(error,stdout,stderr) {
+            assert.equal(requests,3,"should use number of requests from commandline");
             assert.ifError(error);
             assert.done();
         });
