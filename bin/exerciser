@@ -11,7 +11,7 @@ if (a.length < 5 || a.length >7) {
     process.exit();
 }
 
-var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6];
+var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6],returnCode=0;
 var pathStats={};
 
 if (!hostandport[1]) hostandport[1]=80;
@@ -31,13 +31,16 @@ var handleLine=function() {
         stats.times=undefined;
         pathStats[path]=stats;
         console.log(path+ "\t"+stats.totalTime+"\t\t"+Math.round(stats.rps));
-        if (requests != stats.successful)
+        if (requests != stats.successful) {
             console.log("status codes: %j",stats.statusCodes);
+            returnCode=-1;
+        }
         if (++currentLine<totalLines)
             handleLine();
         else {
             if (jsonFile)
                 fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
+            process.exit(returnCode);
         }
         });
 };

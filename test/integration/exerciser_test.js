@@ -73,12 +73,20 @@ module.exports = nodeUnit.testCase({
     },
     "has a command line interface": function(assert) {
         childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1", function(error,stdout,stderr) {
+            assert.ifError(error);
             assert.done();
         });
     },
     "command line interface can write json file": function(assert) {
         childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1 results.json", function(error,stdout,stderr) {
             JSON.parse(fs.readFileSync("results.json"));
+            assert.done();
+        });
+    },
+    "command line interface returns non zero for error": function(assert) {
+        statusCodes=[500];
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1", function(error,stdout,stderr) {
+            assert.ok(error.code != 0);
             assert.done();
         });
     },
