@@ -1,7 +1,6 @@
 var nodeUnit = require("nodeunit"),
     exerciser = require("../../lib/exerciser"),
     http = require("http"),
-    sys = require("sys"),
     childProcess = require("child_process"),
     fs = require("fs"),
     assert = require("assert");
