@@ -11,38 +11,15 @@ if (a.length < 5 || a.length >7) {
     process.exit();
 }
 
-var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6],returnCode=0;
-var pathStats={};
+var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6];
 
 if (!hostandport[1]) hostandport[1]=80;
-
-var e = new exerciser.Exerciser({host:hostandport[0],port:hostandport[1]});
 lines=fs.readFileSync(a[2]).toString().split("\n");
-var currentLine=0,totalLines=lines.length;
-var handleLine=function() {
-    line=lines[currentLine];
-    var headers;
-    pathAndHeaders=line.split(/\s/);
-    if (pathAndHeaders[1])
-        headers=JSON.parse(pathAndHeaders[1]);
-    var path = pathAndHeaders[0];
-    e.run({path:path,requests:requests,concurrent:concurrent,headers:headers}, function(stats) {
-        stats.rps=requests/stats.totalTime*1000;
-        stats.times=undefined;
-        pathStats[path]=stats;
-        console.log(path+ "\t"+stats.totalTime+"\t\t"+Math.round(stats.rps));
-        if (requests != stats.successful) {
-            console.log("status codes: %j",stats.statusCodes);
-            returnCode=-1;
-        }
-        if (++currentLine<totalLines)
-            handleLine();
-        else {
-            if (jsonFile)
-                fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
-            process.exit(returnCode);
-        }
-        });
-};
+
 console.log("path\t\ttotal time\tr/s\t");
-handleLine();
+exerciser.Exerciser.cli(hostandport[0],hostandport[1],lines,requests,concurrent, function(hadErrors, pathStats){
+  if (jsonFile)
+    fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
+  process.exit(hadErrors ? -1 : 0);
+
+})
