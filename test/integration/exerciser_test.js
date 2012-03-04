@@ -3,6 +3,7 @@ var nodeUnit = require("nodeunit"),
     http = require("http"),
     childProcess = require("child_process"),
     fs = require("fs"),
+    util = require('util'),
     assert = require("assert");
 
 
@@ -62,10 +63,10 @@ module.exports = nodeUnit.testCase({
     "can handle timeouts": function(assert) {
         statusCodes=[200,0];
         e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-        e.run({path:'/blah',requests:10,timeout:10}, function(stats) {
+        e.run({path:'/blah',requests:10,timeout:20,concurrent:1}, function(stats) {
               assert.equal(stats.successful, 5, "should report how many requests were succesful");
               assert.equal(stats.statusCodes['timeout'], 5, "should report how many requests were timeouts");
-              assert.equal(stats.totalErrors, 5, "should report how many requests were timeouts");
+              assert.equal(stats.totalErrors, 5, "should report the total number of errors");
               assert.equal(stats.times.length, 10, "should report access times for all requests");
               assert.done();
             }
@@ -99,6 +100,11 @@ module.exports = nodeUnit.testCase({
             assert.ok(error.code != 0);
             assert.done();
         });
+    },
+    "command line interface is usable as a lib": function(assert) {
+      exerciser.Exerciser.cli('127.0.0.1',9999,['/'],100, 10, function(err, stats) {
+        assert.done();
+      });
     },
   tearDown: function(callback) {
       clearTimeout(timeout);
