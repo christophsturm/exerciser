@@ -1,13 +1,14 @@
 {
     "name": "exerciser",
     "description": "a small http benchmarking lib written in node.js",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "maintainers":[
         {
             "name": "Christoph Sturm",
             "email": "me@christophsturm.com"
         }
     ],
+    "main" : "lib/exerciser",
     "bin": {
         "exerciser" : "./bin/exerciser"
     },
