@@ -43,7 +43,7 @@ module.exports = nodeUnit.testCase({
     var e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
     e.run({path:'/blah',requests:999999999999,concurrent:2}, function(stats) {
           assert.ok(requests>0,  "should run some requests");
-          assert.ok(stats.totalTime >= 1000, "total time should be about 1 second "+stats.totalTime  );
+          assert.ok(stats.totalTime >= 900, "total time should be about 1 second "+stats.totalTime  );
           assert.done();
         }
     );
@@ -77,9 +77,9 @@ module.exports = nodeUnit.testCase({
         statusCodes=[200,0];
         var e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
         e.run({path:'/blah',requests:10,timeout:20,concurrent:1}, function(stats) {
-              assert.ok(stats.successful, 5, "should report how many requests were succesful");
-              assert.equal(stats.statusCodes['timeout'], 5, "should report how many requests were timeouts");
-              assert.equal(stats.totalErrors, 5, "should report the total number of errors");
+              assert.ok(stats.successful >= 3, "should report how many requests were succesful");
+              assert.ok(stats.statusCodes.timeout >= 3, "should report how many requests were timeouts:"+stats.statusCodes.timeout);
+              assert.ok(stats.totalErrors >=3 , "should report the total number of errors");
               assert.equal(stats.times.length, 10, "should report access times for all requests");
               assert.done();
             }
