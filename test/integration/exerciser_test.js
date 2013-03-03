@@ -9,7 +9,7 @@ var exerciser = require("../../lib/exerciser"),
 var requests , statusCodes, headers, timeout, svr;
 
 describe('exerciser', function () {
-  describe("get requests", function () {
+  describe("GET requests", function () {
     beforeEach(function (done) {
       svr = http.createServer(function (req, res) {
         headers = req.headers;
