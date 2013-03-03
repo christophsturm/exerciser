@@ -1,0 +1,1 @@
+exec env NODE_PATH=lib:test/lib node node_modules/mocha/bin/mocha ${*}

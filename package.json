@@ -1,22 +1,23 @@
 {
-    "name": "exerciser",
-    "description": "a small http benchmarking lib written in node.js",
-    "version": "0.4.0-dev",
-    "maintainers":[
-        {
-            "name": "Christoph Sturm",
-            "email": "me@christophsturm.com"
-        }
-    ],
-    "main" : "lib/exerciser",
-    "bin": {
-        "exerciser" : "./bin/exerciser"
-    },
-    "directories" : {
-        "lib" : "./lib",
-        "bin" : "./bin"
-    },
-    "devDependencies": {
-        "nodeunit":"*"
+  "name": "exerciser",
+  "description": "a small http benchmarking lib written in node.js",
+  "version": "0.4.0-dev",
+  "maintainers": [
+    {
+      "name": "Christoph Sturm",
+      "email": "me@christophsturm.com"
     }
+  ],
+  "main": "lib/exerciser",
+  "bin": {
+    "exerciser": "./bin/exerciser"
+  },
+  "directories": {
+    "lib": "./lib",
+    "bin": "./bin"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  }
 }
