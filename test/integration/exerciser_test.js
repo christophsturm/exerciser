@@ -9,20 +9,20 @@ var nodeUnit = require("nodeunit"),
 
 
 var requests , statusCodes, headers,timeout, svr;
-svr = http.createServer(function (req, res) {
-    headers=req.headers;
-    var statusCode = statusCodes[requests%statusCodes.length];
-    if (statusCode) { // for status code 0 we'll just let the request timeout
-        res.writeHead(statusCode, {'Content-Type': 'text/plain'});
-        res.end();
-    }
-    requests++;
-});
-svr.listen(9999);
 
 module.exports = nodeUnit.testCase({
 
   setUp: function (callback) {
+    svr = http.createServer(function (req, res) {
+        headers=req.headers;
+        var statusCode = statusCodes[requests%statusCodes.length];
+        if (statusCode) { // for status code 0 we'll just let the request timeout
+            res.writeHead(statusCode, {'Content-Type': 'text/plain'});
+            res.end();
+        }
+        requests++;
+    });
+    svr.listen(9999);
       requests=0;
       statusCodes=[200];
       timeout = setTimeout(function () {assert.fail(null,null, "timeout"); },5000);
@@ -88,43 +88,58 @@ module.exports = nodeUnit.testCase({
 
     "can set headers": function(assert) {
         var e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
-        e.run({path:'/blah',requests:1,headers:{"Cookie":"cookie1=v1, cookie2=v2"}}, function(stats) {
+        e.run({path:'/blah',requests:1,headers:{"Cookie":"cookie1=v1, cookie2=v2"}}, function() {
               assert.deepEqual(headers["cookie"],"cookie1=v1, cookie2=v2");
               assert.done();
             }
         )
     },
 
+    "can send post requests": function(assert) {
+      svr.close();
+      svr = http.createServer(function (req, res) {
+        assert.equals(req.method, 'POST');
+        req.on("data", function(chunk) {
+          assert.equals("lol, I'm a post body", chunk);
+          res.end();
+        });
+      });
+      svr.listen(9999);
+
+      var e = new exerciser.Exerciser({host:'127.0.0.1',port:9999});
+      e.run({path:'/blah',requests:10,body:"lol, I'm a post body"}, function() {
+            assert.done();
+          }
+      )
+    },
+
     "has a command line interface": function(assert) {
-        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 3 1", function(error,stdout,stderr) {
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 3 1", function(error) {
             assert.equal(requests,3,"should use number of requests from commandline");
             assert.ifError(error);
             assert.done();
         });
     },
     "command line interface can write json file": function(assert) {
-        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1 results.json", function(error,stdout,stderr) {
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1 results.json", function() {
             JSON.parse(fs.readFileSync("results.json"));
             assert.done();
         });
     },
     "command line interface returns non zero for error": function(assert) {
         statusCodes=[500];
-        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1", function(error,stdout,stderr) {
+        childProcess.exec(__dirname+"/../../bin/exerciser test/integration/urls.txt localhost:9999 1 1", function(error) {
             assert.ok(error.code != 0);
             assert.done();
         });
     },
     "command line interface is usable as a lib": function(assert) {
-      exerciser.Exerciser.cli('127.0.0.1',9999,['/'],100, 10, function(err, stats) {
+      exerciser.Exerciser.cli('127.0.0.1',9999,['/'],100, 10, function() {
         assert.done();
       });
     },
-  "the end" : function(assert) {
-    svr.close();
-    assert.done();
-  },
   tearDown: function(callback) {
+      svr.close();
       clearTimeout(timeout);
       callback();
 
