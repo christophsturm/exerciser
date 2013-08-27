@@ -20,10 +20,9 @@ describe('exerciser', function () {
         }
         requests++;
       });
-      svr.listen(9999);
       requests = 0;
       statusCodes = [200];
-      done();
+      svr.listen(9999, done);
     });
 
     it("can run parallel http requests and collect stats", function (done) {
