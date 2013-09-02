@@ -2,24 +2,35 @@
 
 var fs = require('fs'),
     exerciser = require('../lib/exerciser');
-var a=process.argv;
+var a = process.argv;
 
-if (a.length < 5 || a.length >7) {
-    console.log("usage: "+a[1]+" filename host:port total-requests [concurrency] [JSON file]");
-    console.log("file format: <url> <headers as json>");
+
+var command = a[1].split("/").pop();
+if (a.length < 5 || a.length > 7) {
+    error();
+}
+
+var hostandport = a[3].split(':'), requests = a[4], concurrent = a[5], jsonFile = a[6];
+
+if (!hostandport[1]) hostandport[1] = 80;
+if (a[2].indexOf("/") == 0) {
+    lines = [a[2]];
+} else {
+    lines = fs.readFileSync(a[2]).toString().split("\n");
+}
+
+
+console.log("path\t\ttotal time\tr/s\t");
+exerciser.Exerciser.cli(hostandport[0], hostandport[1], lines, requests, concurrent, function (hadErrors, pathStats) {
+    if (jsonFile)
+        fs.writeFileSync(jsonFile, JSON.stringify(pathStats));
+    process.exit(hadErrors ? -1 : 0);
+
+});
+function error() {
+    console.log("usage:\n" + command + " filename host[:port] total-requests [concurrency] [JSON file]");
+    console.log("file format: <path> <headers as json>");
+    console.log("or:\n" + command + " path host:port total-requests [concurrency] [JSON file]");
 
     process.exit();
 }
-
-var hostandport=a[3].split(':'),requests = a[4],concurrent=a[5],jsonFile=a[6];
-
-if (!hostandport[1]) hostandport[1]=80;
-lines=fs.readFileSync(a[2]).toString().split("\n");
-
-console.log("path\t\ttotal time\tr/s\t");
-exerciser.Exerciser.cli(hostandport[0],hostandport[1],lines,requests,concurrent, function(hadErrors, pathStats){
-  if (jsonFile)
-    fs.writeFileSync(jsonFile,JSON.stringify(pathStats));
-  process.exit(hadErrors ? -1 : 0);
-
-})
